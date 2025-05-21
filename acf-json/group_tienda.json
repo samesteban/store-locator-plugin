@@ -1,0 +1,78 @@
+{
+	"key": "group_store_fields",
+	"title": "Tienda",
+	"fields": [
+		{
+			"key": "field_store_address",
+			"label": "Dirección",
+			"name": "store_address",
+			"type": "google_map",
+			"instructions": "Busca la dirección exacta de la tienda.",
+			"required": 1
+		},
+		{
+			"key": "field_phone",
+			"label": "Teléfono",
+			"name": "phone",
+			"type": "text",
+			"required": 0
+		},
+		{
+			"key": "field_website",
+			"label": "Sitio Web",
+			"name": "website",
+			"type": "url",
+			"required": 0
+		},
+		{
+			"key": "field_social_links",
+			"label": "Redes Sociales",
+			"name": "social_links",
+			"type": "repeater",
+			"sub_fields": [
+				{
+					"key": "field_platform",
+					"label": "Plataforma",
+					"name": "platform",
+					"type": "select",
+					"choices": {
+						"facebook": "Facebook",
+						"instagram": "Instagram",
+						"whatsapp": "WhatsApp",
+						"tiktok": "TikTok",
+						"x": "X (Twitter)",
+						"linkedin": "LinkedIn"
+					},
+					"required": 0
+				},
+				{
+					"key": "field_social_url",
+					"label": "URL del perfil",
+					"name": "url",
+					"type": "url",
+					"required": 0
+				}
+			],
+			"min": 0,
+			"layout": "row"
+		},
+		{
+			"key": "field_email",
+			"label": "Email",
+			"name": "email",
+			"type": "email",
+			"required": 0
+		}
+	],
+	"location": [
+		[
+			{
+				"param": "post_type",
+				"operator": "==",
+				"value": "tienda"
+			}
+		]
+	],
+	"active": true,
+	"description": "Campos para las tiendas geolocalizadas"
+}
