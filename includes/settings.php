@@ -1,62 +1,88 @@
 <?php
+/**
+ * Archivo: settings.php
+ * ---------------------------------------
+ * Página de configuración del plugin Store Locator.
+ * Permite ingresar:
+ * - Clave de API de Google Maps
+ * - Ícono personalizado para los pines del mapa
+ * También incluye un generador de shortcode con tamaño personalizado.
+ */
 
-// Página de ajustes para ingresar Google Maps API Key
+// Agrega la página al menú de ajustes en el admin
 add_action('admin_menu', function () {
     add_options_page(
-        'Store Locator Ajustes',
-        'Store Locator',
-        'manage_options',
-        'store-locator-settings',
-        'slp_settings_page'
+        'Store Locator Ajustes',        // Título de la página
+        'Store Locator',                // Nombre en el menú
+        'manage_options',               // Permisos necesarios
+        'store-locator-settings',      // Slug único
+        'slp_settings_page'            // Función de renderizado
     );
 });
 
+// Renderizado del contenido de la página de ajustes
 function slp_settings_page() {
     ?>
 <div class="wrap">
     <h1>Configuración del Store Locator</h1>
+
+    <!-- Formulario para guardar las opciones del plugin -->
     <form method="post" action="options.php">
         <?php
-            settings_fields('slp_settings');
-            do_settings_sections('slp_settings');
-            submit_button('Guardar API Key');
+                settings_fields('slp_settings');      // Registra los ajustes
+                do_settings_sections('slp_settings'); // Muestra los campos registrados
+                submit_button('Guardar');
             ?>
     </form>
+
+    <hr>
+    <!-- Generador de shortcode visual -->
+    <h2>Generador de Shortcode</h2>
+    <p>Completa los valores de alto y ancho y copia el shortcode generado para pegarlo donde necesites.</p>
+
+    <table class="form-table">
+        <tr>
+            <th scope="row"><label for="slp_width">Ancho</label></th>
+            <td>
+                <input type="text" id="slp_width" value="100%" placeholder="Ej: 100%, 600px" class="regular-text">
+            </td>
+        </tr>
+        <tr>
+            <th scope="row"><label for="slp_height">Alto</label></th>
+            <td>
+                <input type="text" id="slp_height" value="400px" placeholder="Ej: 400px" class="regular-text">
+            </td>
+        </tr>
+        <tr>
+            <th scope="row"><label for="slp_shortcode">Shortcode</label></th>
+            <td>
+                <input type="text" id="slp_shortcode" readonly class="regular-text" style="background:#f0f0f0">
+                <button type="button" class="button"
+                    onclick="navigator.clipboard.writeText(document.getElementById('slp_shortcode').value)">
+                    Copiar
+                </button>
+            </td>
+        </tr>
+    </table>
 </div>
-<hr>
-<h2>Generador de Shortcode</h2>
-<p>Completa los valores de alto y ancho y copia el shortcode generado para pegarlo donde necesites.</p>
-
-<table class="form-table">
-    <tr>
-        <th scope="row"><label for="slp_width">Ancho</label></th>
-        <td><input type="text" id="slp_width" value="100%" placeholder="Ej: 100%, 600px" class="regular-text"></td>
-    </tr>
-    <tr>
-        <th scope="row"><label for="slp_height">Alto</label></th>
-        <td><input type="text" id="slp_height" value="400px" placeholder="Ej: 400px" class="regular-text"></td>
-    </tr>
-    <tr>
-        <th scope="row"><label for="slp_shortcode">Shortcode</label></th>
-        <td>
-            <input type="text" id="slp_shortcode" readonly class="regular-text" style="background:#f0f0f0">
-            <button type="button" class="button"
-                onclick="navigator.clipboard.writeText(document.getElementById('slp_shortcode').value)">Copiar</button>
-        </td>
-    </tr>
-</table>
-
 <?php
 }
 
+// Registro de los campos de configuración
 add_action('admin_init', function () {
+    // Campo: Clave API de Google Maps
     register_setting('slp_settings', 'slp_google_maps_api');
 
-    add_settings_section('slp_section', 'API Key', null, 'slp_settings');
+    add_settings_section(
+        'slp_section',                 // ID
+        'API Key',                     // Título de la sección
+        null,                          // Callback opcional
+        'slp_settings'                 // Página donde se muestra
+    );
 
     add_settings_field(
-        'slp_google_maps_api',
-        'Clave API de Google Maps',
+        'slp_google_maps_api',        // ID del campo
+        'Clave API de Google Maps',   // Etiqueta
         function () {
             $value = esc_attr(get_option('slp_google_maps_api'));
             echo "<input type='text' name='slp_google_maps_api' value='$value' class='regular-text' />";
@@ -64,15 +90,53 @@ add_action('admin_init', function () {
         'slp_settings',
         'slp_section'
     );
+
+    // Campo: Ícono personalizado para los marcadores
+    register_setting('slp_settings', 'slp_custom_pin_url');
+
+    add_settings_field(
+        'slp_custom_pin_url',
+        'Ícono personalizado del marcador',
+        function () {
+            $image_url = esc_attr(get_option('slp_custom_pin_url'));
+
+            echo '<input type="text" id="slp_custom_pin_url" name="slp_custom_pin_url" value="' . $image_url . '" class="regular-text" />';
+            echo '<button type="button" class="button" id="upload_pin">Subir imagen</button>';
+
+            // Vista previa del ícono y botón para remover
+            if ($image_url) {
+                echo '<br><img id="slp_pin_preview" src="' . $image_url . '" style="max-width:60px;margin-top:10px;" />';
+                echo '<br><button type="button" class="button" id="remove_pin">Quitar imagen</button>';
+            } else {
+                echo '<br><img id="slp_pin_preview" src="" style="display:none;max-width:60px;margin-top:10px;" />';
+                echo '<br><button type="button" class="button" id="remove_pin" style="display:none;">Quitar imagen</button>';
+            }
+        },
+        'slp_settings',
+        'slp_section'
+    );
 });
 
-// Cargar script solo en esta página de ajustes
+// Encola los scripts necesarios solo en la página de ajustes del plugin
 add_action('admin_enqueue_scripts', function ($hook) {
     if ($hook === 'settings_page_store-locator-settings') {
+        // Script del generador de shortcodes (altura/ancho)
         wp_enqueue_script(
             'slp-shortcode-generator',
             SLP_URL . 'assets/js/shortcode-generator.js',
             [],
+            '1.0.0',
+            true
+        );
+
+        // Habilita el selector de medios de WordPress
+        wp_enqueue_media();
+
+        // Script para subir y quitar ícono del marcador
+        wp_enqueue_script(
+            'slp-pin-upload',
+            SLP_URL . 'assets/js/pin-upload.js',
+            ['jquery'],
             '1.0.0',
             true
         );

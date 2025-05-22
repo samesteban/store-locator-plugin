@@ -19,7 +19,7 @@ add_action('wp_enqueue_scripts', function () {
     wp_enqueue_script(
         'google-maps-api',
         'https://maps.googleapis.com/maps/api/js?key=' . esc_attr($api_key) . '&language=es',
-        [], // sin dependencias, se carga sola
+        [],
         null,
         true
     );
