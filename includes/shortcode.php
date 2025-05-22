@@ -1,20 +1,61 @@
 <?php
 
-// Shortcode: [tiendas_cercanas ancho="100%" alto="400px"]
-add_shortcode('tiendas_cercanas', function ($atts) {
+add_shortcode('store_locator', function ($atts) {
     $atts = shortcode_atts([
-        'ancho' => '100%',
-        'alto'  => '400px'
+        'width' => '100%',
+        'height' => '400px',
     ], $atts);
 
-    // Limpieza básica
-    $width = esc_attr($atts['ancho']);
-    $height = esc_attr($atts['alto']);
+    // Obtener tiendas
+    $tiendas = new WP_Query([
+        'post_type' => 'tienda',
+        'posts_per_page' => -1,
+    ]);
+
+    $locations = [];
+
+    while ($tiendas->have_posts()) {
+        $tiendas->the_post();
+        $location = get_field('store_address');
+
+        if ($location) {
+            $locations[] = [
+                'nombre' => get_the_title(),
+                'direccion' => $location['address'],
+                'lat' => $location['lat'],
+                'lng' => $location['lng'],
+                'telefono' => get_field('phone'),
+                'sitio_web' => get_field('website'),
+                'email' => get_field('email'),
+                'redes' => get_field('social_links') ?: [],
+            ];
+        }
+    }
+
+    wp_reset_postdata();
+
+    // REGISTRA el script si no ha sido registrado antes
+    if (!wp_script_is('slp-map-script', 'enqueued')) {
+        wp_register_script(
+            'slp-map-script',
+            SLP_URL . 'assets/js/map.js',
+            [],
+            '1.0.0',
+            true
+        );
+
+        // PASAR datos
+        wp_localize_script('slp-map-script', 'slpData', [
+            'locations' => $locations,
+        ]);
+
+        // ENCOLAR el script ahora
+        wp_enqueue_script('slp-map-script');
+    }
 
     ob_start();
     ?>
-<div id="map" style="width: <?php echo $width; ?>; height: <?php echo $height; ?>; margin-bottom: 20px;"></div>
-<ul id="store-list"></ul>
+<div id="slp-map" style="width: <?= esc_attr($atts['width']) ?>; height: <?= esc_attr($atts['height']) ?>;"></div>
 <?php
     return ob_get_clean();
 });
