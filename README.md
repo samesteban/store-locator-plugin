@@ -131,6 +131,6 @@ Sí, el pin subido se usa para todas las tiendas, si está configurado.
 
 ## 👨‍💻 Créditos y soporte
 
-Desarrollado por [Samuel Esteban](mailto:tu-email@ejemplo.com)
+Desarrollado por Sam Esteban.
 Plugin a medida, consultoría, soporte y personalizaciones:
 [https://samesteban.com](https://samesteban.com)
