@@ -1,136 +1,101 @@
-# Store Locator Plugin for WordPress
+# Store Locator Plugin para WordPress
 
-**Geolocalización de tiendas fácil, rápida y personalizable, usando Google Maps y ACF.**
+**Versión: 1.2.0**  
+Desarrollado por Samuel Esteban
 
----
+## Descripción
 
-## 🚀 Características principales
+Store Locator es un plugin avanzado y modular para WordPress que permite a tus visitantes encontrar tiendas cercanas usando Google Maps, autocompletado de ubicación y listado de tiendas personalizado. Todo el contenido es gestionado desde el admin, y el frontend ofrece una experiencia similar a grandes marcas internacionales.
 
-- Muestra tiendas (CPT `tienda`) en un mapa Google Maps con estilo gris moderno.
-- Compatible con **ACF PRO** para guardar dirección y datos extra de cada tienda.
-- Soporte para marcador personalizado global.
-- Botón de geolocalización: muestra las tiendas más cercanas al usuario.
-- Shortcode fácil de usar y personalizable en tamaño.
-- Incluye mensajes tipo toast para feedback amigable.
-- Totalmente compatible con cualquier theme y estructura WordPress.
+## Características Principales
 
----
+- **Mapa Google Maps** con estilo gris personalizado, solo muestra nombres de calles y lugares relevantes.
+- **Listado de tiendas** en tarjetas (cards) junto al mapa, con logo, dirección, contacto y horario.
+- **Input de búsqueda** con autocompletado de Google Places, para encontrar tiendas cercanas a una ubicación escrita.
+- **Botón de geolocalización** que centra el mapa y lista las tiendas más cercanas al usuario, mostrando la dirección encontrada en el input.
+- **Panel lateral de información**: muestra detalles ampliados de la tienda seleccionada (logo, nombre, dirección, contacto, web, redes).
+- **Soporte para ícono de pin personalizado** (desde ajustes del plugin).
+- **Soporte ACF**: toda la información de tiendas es gestionada por campos personalizados avanzados.
+- **Adaptado para móviles** (diseño responsive).
 
-## 🧩 Requisitos
+## Instalación
 
-- WordPress 5.5 o superior
-- **ACF PRO** (Advanced Custom Fields PRO) instalado y activo
-- Clave de API de Google Maps habilitada para uso en JavaScript
+1. **Sube la carpeta** del plugin a `/wp-content/plugins/store-locator`.
+2. **Actívalo** desde el panel de administración de WordPress.
+3. Ve a `Ajustes > Store Locator` para:
+   - Pegar tu clave API de Google Maps.
+   - (Opcional) Subir tu ícono de marcador personalizado.
+4. **Configura las tiendas**: desde el CPT 'Tienda', añade cada ubicación con su información y logo.
+5. **Agrega el shortcode** `[store_locator]` en la página donde quieras mostrar el buscador.
 
----
-
-## ⚡ Instalación rápida
-
-1. **Sube** la carpeta del plugin a `/wp-content/plugins/store-locator/`
-2. **Actívalo** desde el panel de Plugins en WordPress.
-3. Asegúrate de tener **ACF PRO** activo.
-4. Ve a **Ajustes > Store Locator** para:
-   - Ingresar tu Google Maps API Key
-   - (Opcional) Subir un ícono personalizado para el marcador
-
----
-
-## 🛠️ Configuración
-
-### Página de ajustes (`Ajustes > Store Locator`):
-
-- **Google Maps API Key:**  
-  Ingresa tu clave para que los mapas funcionen.
-- **Ícono personalizado:**  
-  Sube una imagen (PNG recomendado) para usar como pin global.
-- **Generador de Shortcode:**  
-  Genera el código `[store_locator]` con el tamaño que quieras copiar y pegar.
-
----
-
-## 🏷️ Uso del Shortcode
-
-Agrega el mapa en cualquier página o post usando:
+## Uso del Shortcode
 
 ```plaintext
-[store_locator width="100%" height="400px"]
+[store_locator width="100%" height="500px"]
 ```
 
-- Puedes personalizar el ancho y alto (ej: `width="600px"` `height="500px"`).
+- `width` y `height` aceptan valores en `%` o `px`.
+- El layout muestra el mapa y el listado de tiendas de manera lateral.
 
----
+## Campos de la Tienda
 
-## ⚙️ Opciones de Configuración
+Estos campos se gestionan mediante Advanced Custom Fields (ACF PRO) e incluyen:
 
-| Opción                      | Descripción                      | Dónde se configura           |
-| --------------------------- | -------------------------------- | ---------------------------- |
-| Clave API Google Maps       | API key para Google Maps         | Ajustes del plugin           |
-| Ícono personalizado del pin | Imagen para todos los marcadores | Ajustes del plugin           |
-| Ancho/alto del mapa         | Personaliza el tamaño del mapa   | Shortcode o generador visual |
+- Dirección (campo Google Map)
+- Teléfono
+- Sitio Web
+- Email
+- Horario
+- Logo/imagen
+- Redes Sociales (Facebook, Instagram, etc.)
 
----
+**El archivo JSON de ACF se incluye en `/acf-json/group_tienda.json` para importar fácilmente el grupo de campos.**
 
-## 🧑‍💻 Campos personalizados ACF
+## Funcionalidades avanzadas
 
-Cada tienda debe tener el campo `store_address` de tipo **Google Map** y otros campos opcionales:
+- **Búsqueda incremental:** Si no hay tiendas en el radio de 5km, amplía hasta encontrar una tienda cercana.
+- **Panel lateral de info:** Muestra la información completa de la tienda seleccionada (logo, nombre, dirección, contacto, web, redes).
+- **Selección sincronizada:** Al hacer click en un pin o card, se resalta en ambos.
+- **UX mejorada:** Mensajes tipo toast y diseño moderno.
+- **Responsive:** El plugin se adapta a móviles y tablets automáticamente.
 
-- Teléfono (`phone`)
-- Sitio web (`website`)
-- Email (`email`)
-- Redes sociales (`social_links` - Repeater)
+## Personalización
 
----
+Puedes ajustar los estilos modificando `/assets/css/styles.css`.
+El script principal es `/assets/js/map.js` y viene comentado para facilitar su extensión.
 
-## 🗺️ Funciones inteligentes
+## Requisitos
 
-- **Geolocalización automática**
-  El usuario puede aceptar mostrar su ubicación; el mapa centra y destaca tiendas en un radio de 5 km.
-- **Botón “Mostrar tiendas cercanas”**
-  Siempre disponible para intentar de nuevo.
-- **Zoom y InfoWindow amigable**
-  Al hacer clic en un marcador, el mapa centra y muestra los datos completos de la tienda.
+- WordPress 5.8+
+- ACF PRO (requerido para los campos personalizados)
+- Cuenta y clave de Google Maps API
 
----
+## Actualización y cambios
 
-## 🎨 Personalización de estilos
+### 1.2.0
 
-- El mapa usa un estilo gris minimalista y elegante por defecto.
-- Puedes ajustar el CSS del contenedor `#slp-map` o los toast desde tu theme si lo deseas.
+- Nuevo diseño con listado lateral de tiendas en cards.
+- Panel de información lateral (no sobre el pin).
+- Integración de input con Google Places Autocomplete.
+- Mejoras en UX (selección sincronizada, toasts).
+- Control de geolocalización y reverse-geocoding.
+- Soporte para logo, horario y redes sociales por tienda.
+- Mejoras responsivas y optimización de estilos.
+- Mejoras de seguridad en el shortcode (validación de atributos adicionales: vh).
 
----
+### 1.1.0
 
-## ❓ Preguntas frecuentes
+- Mejoras de seguridad en el shortcode (validación de atributos).
+- Botón de geolocalización.
 
-**¿Por qué no aparecen tiendas en el mapa?**
-Verifica que hayas creado tiendas (CPT `tienda`) y les hayas asignado dirección en el campo Google Map de ACF.
+### 1.0.0
 
-**¿Por qué no carga el mapa?**
-Asegúrate de haber ingresado la Google Maps API Key correcta y que la facturación esté activa en Google Cloud.
+- Primera versión.
 
-**¿El shortcode funciona con cualquier theme?**
-Sí, está diseñado para ser totalmente independiente de la estructura del theme.
+## Créditos
 
-**¿El plugin guarda los datos de los pins personalizados?**
-Sí, el pin subido se usa para todas las tiendas, si está configurado.
+Desarrollado por [Sam Esteban](https://samesteban.com/ "Sam Esteban").
 
----
+## Licencia
 
-## 🧑‍🔧 Para desarrolladores
-
-- Puedes editar los estilos del mapa en `assets/js/map.js` (`mapStyle` array).
-- El plugin es modular, fácil de extender y mantener.
-- Scripts principales:
-
-  - `map.js`: Lógica del mapa y geolocalización.
-  - `shortcode-generator.js`: Generador visual para el admin.
-  - `pin-upload.js`: Subida de íconos para marcadores.
-
-- Todos los datos de tiendas se pasan a JS vía `wp_localize_script` para máxima compatibilidad.
-
----
-
-## 👨‍💻 Créditos y soporte
-
-Desarrollado por Sam Esteban.
-Plugin a medida, consultoría, soporte y personalizaciones:
-[https://samesteban.com](https://samesteban.com)
+Licencia MIT (puedes modificar, mejorar y usar libremente este plugin, dando créditos al autor original).
