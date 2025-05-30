@@ -1,0 +1,241 @@
+/* --- CONTENEDOR PRINCIPAL --- */
+.slp-store-locator {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+}
+
+/* --- MAPA --- */
+.slp-locator-map {
+  height: 100%;
+  width: 70%;
+  position: relative;
+}
+.slp-locator-map #slp-map {
+  width: 100%;
+  height: 100%;
+}
+.slp-locator-map #slp-toast {
+  position: absolute;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #333;
+  color: #fff;
+  padding: 10px 20px;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  opacity: 0;
+  transition: opacity 0.3s;
+  z-index: 9999;
+  font-size: 14px;
+}
+
+/* --- LISTADO DE TIENDAS (SIDEBAR) --- */
+.slp-list-area {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  width: 30%;
+  border-top: 1px solid #e0e0e0;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+/* Buscador e input */
+.slp-input-search-area {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem;
+  background: #fff;
+  position: relative;
+  border-bottom: 1px solid #e0e0e0;
+}
+.slp-input-search-area #slp-place-input {
+  flex: 1;
+  outline: none;
+}
+.slp-input-search-area #slp-geolocate-btn {
+  background: #fff;
+  cursor: pointer;
+  width: 2rem;
+  height: 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Cards de tienda */
+.slp-locator-list {
+  flex: 1;
+  overflow-y: auto;
+  padding: 0.5rem;
+  background: #fff;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+.slp-store-card {
+  padding: 1rem;
+  border: 1px solid #f0f0f0;
+  border-radius: 6px;
+  transition: background 0.2s, border 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  cursor: pointer;
+}
+.slp-store-card:hover {
+  background: #fafafa;
+}
+.slp-store-card.active {
+  border: 1px solid #1890ff;
+  background: #eaf4ff;
+}
+.slp-store-card strong {
+  font-size: 1rem;
+}
+.slp-store-card small {
+  font-size: 0.85rem;
+  color: #555;
+  line-height: 100%;
+}
+
+/* Logo en card */
+.slp-store-logo-area {
+  width: 100px;
+  height: 100px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  aspect-ratio: 1/1;
+  background-color: #f0f0f0;
+}
+.slp-store-logo {
+  width: 70px;
+  height: 70px;
+  object-fit: cover;
+  border-radius: 4px;
+}
+
+/* Info tienda en card */
+.slp-store-info {
+  flex: 1;
+}
+
+/* --- PANEL LATERAL DE INFO DE TIENDA --- */
+.slp-info-panel {
+  position: absolute;
+  top: 1rem;
+  left: 1rem;
+  z-index: 999;
+  background: #fff;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.18);
+  padding: 1rem;
+  min-width: 240px;
+  max-width: 320px;
+  display: none;
+}
+#slp-info-panel-content {
+  display: flex;
+  flex-direction: column;
+}
+.slp-info-panel .slp-local-rrss {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+.slp-panel-logo {
+  width: 70px;
+  height: 70px;
+  object-fit: cover;
+  border-radius: 6px;
+  display: block;
+  margin-bottom: 0.5rem;
+}
+.slp-panel-close {
+  float: right;
+  background: none;
+  border: none;
+  font-size: 18px;
+  cursor: pointer;
+  margin-left: 8px;
+}
+
+/* --- DESKTOP: Layout horizontal por defecto --- */
+.slp-store-locator {
+  flex-direction: row;
+}
+.slp-locator-map {
+  width: 70%;
+  min-width: 350px;
+}
+.slp-list-area {
+  width: 30%;
+  min-width: 240px;
+  max-width: 420px;
+}
+
+/* --- MOBILE: Breakpoint para pantallas <=900px --- */
+@media (max-width: 900px) {
+  .slp-store-locator {
+    flex-direction: column;
+  }
+  .slp-locator-map,
+  .slp-list-area {
+    width: 100% !important;
+    min-width: unset;
+    max-width: unset;
+  }
+  .slp-locator-map {
+    height: 350px;
+    min-height: 220px;
+    max-height: 400px;
+  }
+  .slp-list-area {
+    height: auto;
+    max-height: 340px;
+    min-height: 200px;
+    border-left: none;
+    border-right: none;
+  }
+}
+
+/* --- MOBILE: Cards y panel info de tienda --- */
+@media (max-width: 600px) {
+  .slp-info-panel {
+    min-width: 90vw;
+    max-width: 98vw;
+    left: 50%;
+    transform: translateX(-50%);
+    top: 0.5rem;
+    padding: 0.75rem 0.75rem 0.75rem 1rem;
+    font-size: 0.95rem;
+  }
+  .slp-store-card {
+    gap: 0.5rem;
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .slp-store-logo-area,
+  .slp-store-logo {
+    width: 54px;
+    height: 54px;
+  }
+  .slp-panel-logo {
+    width: 54px;
+    height: 54px;
+  }
+}
+
+/* Mejoras de usabilidad en mobile para scroll */
+@media (max-width: 480px) {
+  .slp-locator-list {
+    padding: 0.25rem;
+    font-size: 0.94rem;
+  }
+  .slp-input-search-area {
+    padding: 0.5rem 0.25rem;
+  }
+}

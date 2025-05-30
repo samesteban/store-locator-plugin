@@ -71,11 +71,11 @@ function slp_settings_page() {
 // Registro de los campos de configuración
 add_action('admin_init', function () {
     // Campo: Clave API de Google Maps
-    register_setting('slp_settings', 'slp_google_maps_api');
+    register_setting('slp_settings', 'slp_google_maps_api', [ 'sanitize_callback' => 'sanitize_text_field' ]);
 
     add_settings_section(
         'slp_section',                 // ID
-        'API Key',                     // Título de la sección
+        'Requerimientos del mapa',                     // Título de la sección
         null,                          // Callback opcional
         'slp_settings'                 // Página donde se muestra
     );
@@ -92,7 +92,7 @@ add_action('admin_init', function () {
     );
 
     // Campo: Ícono personalizado para los marcadores
-    register_setting('slp_settings', 'slp_custom_pin_url');
+    register_setting('slp_settings', 'slp_custom_pin_url', [ 'sanitize_callback' => 'esc_url_raw' ]);
 
     add_settings_field(
         'slp_custom_pin_url',
@@ -100,12 +100,12 @@ add_action('admin_init', function () {
         function () {
             $image_url = esc_attr(get_option('slp_custom_pin_url'));
 
-            echo '<input type="text" id="slp_custom_pin_url" name="slp_custom_pin_url" value="' . $image_url . '" class="regular-text" />';
+            echo '<input type="text" id="slp_custom_pin_url" name="slp_custom_pin_url" value="' . esc_url($image_url) . '" class="regular-text" />';
             echo '<button type="button" class="button" id="upload_pin">Subir imagen</button>';
 
             // Vista previa del ícono y botón para remover
             if ($image_url) {
-                echo '<br><img id="slp_pin_preview" src="' . $image_url . '" style="max-width:60px;margin-top:10px;" />';
+                echo '<br><img id="slp_pin_preview" src="' . esc_url($image_url) . '" style="max-width:60px;margin-top:10px;" />';
                 echo '<br><button type="button" class="button" id="remove_pin">Quitar imagen</button>';
             } else {
                 echo '<br><img id="slp_pin_preview" src="" style="display:none;max-width:60px;margin-top:10px;" />';

@@ -18,9 +18,11 @@ add_action('wp_enqueue_scripts', function () {
 
     wp_enqueue_script(
         'google-maps-api',
-        'https://maps.googleapis.com/maps/api/js?key=' . esc_attr($api_key) . '&language=es',
+        'https://maps.googleapis.com/maps/api/js?key=' . esc_attr($api_key) . '&libraries=places&language=es',
         [],
         null,
         true
     );
+
+    wp_enqueue_style('slp-styles', SLP_URL . 'assets/css/styles.css', [], null);
 });
