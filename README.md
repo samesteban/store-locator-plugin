@@ -1,6 +1,6 @@
 # Store Locator Plugin para WordPress
 
-**Versión: 1.2.0**  
+**Versión: 1.3.0**  
 Desarrollado por Samuel Esteban
 
 ## Descripción
