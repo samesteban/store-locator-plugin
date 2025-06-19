@@ -124,6 +124,30 @@ function createInfoWindowContent(loc) {
   `;
 }
 
+// --- UTILIDADES DE FILTRADO ---
+// Filtra tiendas cercanas a un punto, en un radio (km)
+function getNearbyStores(centerLat, centerLng, radiusKm = 5) {
+  return slpData.locations.filter((loc) => {
+    const dist = getDistance(
+      centerLat,
+      centerLng,
+      parseFloat(loc.lat),
+      parseFloat(loc.lng)
+    );
+    return dist <= radiusKm;
+  });
+}
+
+// Filtra las primeras 10 tiendas de la Región Metropolitana
+function getDefaultStores(region = "Metropolitana") {
+  const matches = slpData.locations.filter(
+    (loc) =>
+      loc.direccion &&
+      loc.direccion.toLowerCase().includes(region.toLowerCase())
+  );
+  return matches.slice(0, 10);
+}
+
 // --- Geolocalización ---
 
 /**
@@ -252,27 +276,44 @@ function initAutocomplete(map) {
  * Renderiza las cards de tienda en el sidebar y las enlaza a los marcadores.
  * Al seleccionar, marca la card, el pin y muestra el panel lateral.
  */
-function renderStoreList(map, markers) {
+function renderStoreList(map, markers, storesToShow) {
   const container = document.querySelector(".slp-locator-list");
   if (!container) return;
+
+  // Mostrar sólo los marcadores de las tiendas en storesToShow
+  markers.forEach((marker, idx) => {
+    // Chequea si el marcador corresponde a una tienda del listado
+    const visible = storesToShow.some(
+      (loc) =>
+        parseFloat(loc.lat) === marker.getPosition().lat() &&
+        parseFloat(loc.lng) === marker.getPosition().lng()
+    );
+    marker.setVisible(visible);
+  });
+
   container.innerHTML = "";
+
+  if (!storesToShow.length) {
+    container.innerHTML =
+      '<div class="slp-empty">No hay tiendas para mostrar.</div>';
+    return;
+  }
 
   const cardNodes = [];
   let activeIndex = null;
 
-  // Panel info lateral y botón cerrar
+  // Info panel y botón cerrar
   const infoPanel = document.getElementById("slp-info-panel");
   const panelContent = document.getElementById("slp-info-panel-content");
   const closeBtn = document.getElementById("slp-panel-close");
 
-  // Quita todos los activos y oculta el panel lateral
   function clearActive() {
     cardNodes.forEach((c) => c.classList.remove("active"));
     markers.forEach((marker, idx) => {
       if (marker.setIcon && slpData.customIcon) {
         marker.setIcon({
           url: slpData.customIcon,
-          scaledSize: new google.maps.Size(28, 28),
+          scaledSize: new google.maps.Size(32, 32),
         });
       } else if (marker.setIcon) {
         marker.setIcon(null);
@@ -281,14 +322,18 @@ function renderStoreList(map, markers) {
     activeIndex = null;
     if (infoPanel) infoPanel.style.display = "none";
   }
-
   if (closeBtn) closeBtn.onclick = clearActive;
 
-  // Renderiza cada card de tienda y la enlaza al pin
-  slpData.locations.forEach((loc, i) => {
+  // Relación entre storesToShow y slpData.locations (por índice)
+  function getGlobalIndex(loc) {
+    return slpData.locations.findIndex(
+      (store) => store.lat === loc.lat && store.lng === loc.lng
+    );
+  }
+
+  storesToShow.forEach((loc, idx) => {
     const card = document.createElement("div");
     card.className = "slp-store-card";
-    if (i === activeIndex) card.classList.add("active");
 
     // Logo
     if (loc.logo) {
@@ -315,27 +360,30 @@ function renderStoreList(map, markers) {
     cardNodes.push(card);
     container.appendChild(card);
 
-    // --- Evento click en la card ---
+    // Evento click en card
     card.addEventListener("click", () => {
       cardNodes.forEach((c) => c.classList.remove("active"));
       card.classList.add("active");
+
+      const globalIndex = getGlobalIndex(loc);
+
       markers.forEach((marker, idx) => {
         if (marker.setIcon && slpData.customIcon) {
           marker.setIcon({
             url: slpData.customIcon,
             scaledSize: new google.maps.Size(
-              idx === i ? 38 : 28,
-              idx === i ? 38 : 28
+              idx === globalIndex ? 38 : 28,
+              idx === globalIndex ? 38 : 28
             ),
           });
         } else if (marker.setIcon) {
           marker.setIcon(null);
         }
       });
-      map.panTo(markers[i].getPosition());
+      map.panTo(markers[globalIndex].getPosition());
       map.setZoom(16);
 
-      // Muestra panel lateral de info
+      // Panel lateral de info
       if (infoPanel && panelContent) {
         panelContent.innerHTML = `
           ${loc.logo ? `<img src="${loc.logo}" class="slp-panel-logo">` : ""}
@@ -368,23 +416,31 @@ function renderStoreList(map, markers) {
         `;
         infoPanel.style.display = "block";
       }
-      activeIndex = i;
+      activeIndex = globalIndex;
     });
   });
 
-  // --- Evento click en el pin ---
-  markers.forEach((marker, i) => {
+  // Evento click en el pin
+  markers.forEach((marker, globalIdx) => {
     google.maps.event.clearListeners(marker, "click");
     marker.addListener("click", () => {
+      // Solo marcamos el pin y card si está en el listado actual
+      const idx = storesToShow.findIndex(
+        (loc) =>
+          parseFloat(loc.lat) === marker.getPosition().lat() &&
+          parseFloat(loc.lng) === marker.getPosition().lng()
+      );
+      if (idx === -1) return;
+
       cardNodes.forEach((c) => c.classList.remove("active"));
-      cardNodes[i].classList.add("active");
-      markers.forEach((m, idx) => {
+      cardNodes[idx].classList.add("active");
+      markers.forEach((m, mi) => {
         if (m.setIcon && slpData.customIcon) {
           m.setIcon({
             url: slpData.customIcon,
             scaledSize: new google.maps.Size(
-              idx === i ? 38 : 28,
-              idx === i ? 38 : 28
+              mi === globalIdx ? 38 : 28,
+              mi === globalIdx ? 38 : 28
             ),
           });
         } else if (m.setIcon) {
@@ -396,7 +452,7 @@ function renderStoreList(map, markers) {
 
       // Panel info
       if (infoPanel && panelContent) {
-        const loc = slpData.locations[i];
+        const loc = storesToShow[idx];
         panelContent.innerHTML = `
           ${loc.logo ? `<img src="${loc.logo}" class="slp-panel-logo">` : ""}
           <strong>${loc.nombre}</strong>
@@ -428,7 +484,7 @@ function renderStoreList(map, markers) {
         `;
         infoPanel.style.display = "block";
       }
-      activeIndex = i;
+      activeIndex = globalIdx;
     });
   });
 }
@@ -445,7 +501,6 @@ function initMap() {
 
   const bounds = new google.maps.LatLngBounds();
 
-  // Instancia de mapa
   const map = new google.maps.Map(container, {
     zoom: 12,
     center: {
@@ -459,11 +514,10 @@ function initMap() {
     fullscreenControl: false,
   });
 
-  // Prepara arrays de markers e infoWindows
+  // --- Marca todos los pins (pero el listado lateral solo los filtrados) ---
   const markers = [];
   const infoWindows = [];
 
-  // Recorre todas las tiendas para generar sus marcadores
   slpData.locations.forEach((loc) => {
     const position = {
       lat: parseFloat(loc.lat),
@@ -473,21 +527,21 @@ function initMap() {
       position,
       map,
       title: decodeHTML(loc.nombre),
+      visible: false,
     };
     if (slpData.customIcon) {
       markerOptions.icon = {
         url: slpData.customIcon,
-        scaledSize: new google.maps.Size(22, 28),
+        scaledSize: new google.maps.Size(38, 38),
       };
     }
     const marker = new google.maps.Marker(markerOptions);
 
-    // Se mantiene la creación del InfoWindow por compatibilidad (no se usa en panel lateral)
+    // InfoWindow por compatibilidad
     const infoWindow = new google.maps.InfoWindow({
       content: createInfoWindowContent(loc),
     });
 
-    // Permitir abrir InfoWindow clásico si quieres, aunque ahora el panel lateral es la fuente principal de detalles
     if (!window.slpOpenInfoWindow) window.slpOpenInfoWindow = null;
     marker.addListener("click", () => {
       if (window.slpOpenInfoWindow) window.slpOpenInfoWindow.close();
@@ -502,28 +556,52 @@ function initMap() {
     infoWindows.push(infoWindow);
   });
 
-  // Ajusta el mapa para mostrar todos los marcadores
   map.fitBounds(bounds);
 
-  // Geolocalización automática y búsqueda
+  // --- Al cargar, sólo muestra las primeras 10 de la RM ---
+  renderStoreList(map, markers, getDefaultStores("Metropolitana"));
+
   autoGeolocateIfAllowed(map);
-  initAutocomplete(map);
-  renderStoreList(map, markers, infoWindows);
+
+  // Búsqueda autocomplete
+  function customInitAutocomplete() {
+    const input = document.getElementById("slp-place-input");
+    if (!input || !google.maps.places) return;
+    const autocomplete = new google.maps.places.Autocomplete(input);
+    autocomplete.setFields(["geometry"]);
+    autocomplete.addListener("place_changed", () => {
+      const place = autocomplete.getPlace();
+      if (!place.geometry || !place.geometry.location) {
+        showToast("No se encontró esa ubicación.");
+        return;
+      }
+      const lat = place.geometry.location.lat();
+      const lng = place.geometry.location.lng();
+      const nearbyStores = getNearbyStores(lat, lng, kmRadius);
+      renderStoreList(map, markers, nearbyStores);
+      map.panTo(place.geometry.location);
+      findNearbyStores(place.geometry.location, map);
+    });
+  }
+  customInitAutocomplete();
 
   // Botón "Mostrar tiendas cercanas"
   const geolocateButton = document.getElementById("slp-geolocate-btn");
   if (geolocateButton) {
     geolocateButton.addEventListener("click", () => {
       if (!navigator.geolocation) {
-        alert("La geolocalización no está disponible en este navegador.");
+        showToast("La geolocalización no está disponible en este navegador.");
         return;
       }
       navigator.geolocation.getCurrentPosition(
         (position) => {
           const userLat = position.coords.latitude;
           const userLng = position.coords.longitude;
+          // Actualiza listado con las cercanas
+          const nearbyStores = getNearbyStores(userLat, userLng, kmRadius);
+          renderStoreList(map, markers, nearbyStores);
 
-          // Reverse geocode para mostrar dirección en el input
+          // Reverse geocode para el input
           const geocoder = new google.maps.Geocoder();
           const latlng = { lat: userLat, lng: userLng };
           geocoder.geocode({ location: latlng }, (results, status) => {
@@ -533,7 +611,7 @@ function initMap() {
             }
           });
 
-          // Encuentra tiendas cercanas y ajusta el mapa
+          // Encuentra tiendas cercanas en el mapa (visual)
           const nearbyBounds = new google.maps.LatLngBounds();
           slpData.locations.forEach((loc) => {
             const distance = getDistance(

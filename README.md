@@ -72,6 +72,20 @@ El script principal es `/assets/js/map.js` y viene comentado para facilitar su e
 
 ## Actualización y cambios
 
+## [1.3.0] - 2025-06-19
+
+### Added
+
+- Ahora sólo se muestran en el mapa los marcadores correspondientes a las tiendas visibles en el listado lateral (ya sea las 10 primeras por defecto o las más cercanas según búsqueda). Esto mejora el rendimiento y la experiencia de usuario, evitando saturar el mapa con demasiados marcadores.
+
+### Changed
+
+- Comportamiento inicial del listado: si el usuario no ha buscado ni permitido geolocalización, sólo aparecen 10 tiendas de la Región Metropolitana en el listado lateral y en el mapa.
+
+### Fixed
+
+- Sincronización dinámica entre el listado lateral y los marcadores del mapa.
+
 ### 1.2.0
 
 - Nuevo diseño con listado lateral de tiendas en cards.
