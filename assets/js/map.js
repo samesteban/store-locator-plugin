@@ -94,32 +94,83 @@ function showToast(message) {
 }
 
 /** Genera el HTML para la InfoWindow de una tienda */
-function createInfoWindowContent(loc) {
+function createInfoWindowContent(loc, accentColor = "#1890ff") {
+  console.log(loc);
+  const gmapsUrl = `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(
+    loc.lat
+  )},${encodeURIComponent(loc.lng)}`;
   return `
-    <div class="slp-infowindow" style="max-width: 250px">
-      <strong>${loc.nombre}</strong><br>
-      <p>${loc.direccion}</p>
-      ${loc.telefono ? `<p>${loc.telefono}</p>` : ""}
+    <div class="slp-infowindow" style="max-width:200px; font-family:inherit;">
+    <div class="slp-infowindow-store-name">
+    ${
+      loc.logo
+        ? `<img src="${loc.logo}" class="slp-infowindow-store-logo">`
+        : ""
+    }
+      <span>${loc.nombre}</span>
+    </div>
+    <div class="slp-infowindow-store-info">
+  ${
+    loc.direccion
+      ? `
+    <div class="slp-infowindow-contact-box">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="currentColor"><path d="M18.364 17.364L12 23.7279L5.63604 17.364C2.12132 13.8492 2.12132 8.15076 5.63604 4.63604C9.15076 1.12132 14.8492 1.12132 18.364 4.63604C21.8787 8.15076 21.8787 13.8492 18.364 17.364ZM12 15C14.2091 15 16 13.2091 16 11C16 8.79086 14.2091 7 12 7C9.79086 7 8 8.79086 8 11C8 13.2091 9.79086 15 12 15ZM12 13C10.8954 13 10 12.1046 10 11C10 9.89543 10.8954 9 12 9C13.1046 9 14 9.89543 14 11C14 12.1046 13.1046 13 12 13Z"></path></svg> ${loc.direccion}
+    </div>
+    `
+      : ""
+  }
       ${
-        loc.email ? `<p><a href="mailto:${loc.email}">${loc.email}</a></p>` : ""
+        loc.telefono
+          ? `
+          <div class="slp-infowindow-contact-box">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="currentColor"><path d="M21 16.42V19.9561C21 20.4811 20.5941 20.9167 20.0705 20.9537C19.6331 20.9846 19.2763 21 19 21C10.1634 21 3 13.8366 3 5C3 4.72371 3.01545 4.36687 3.04635 3.9295C3.08337 3.40588 3.51894 3 4.04386 3H7.5801C7.83678 3 8.05176 3.19442 8.07753 3.4498C8.10067 3.67907 8.12218 3.86314 8.14207 4.00202C8.34435 5.41472 8.75753 6.75936 9.3487 8.00303C9.44359 8.20265 9.38171 8.44159 9.20185 8.57006L7.04355 10.1118C8.35752 13.1811 10.8189 15.6425 13.8882 16.9565L15.4271 14.8019C15.5572 14.6199 15.799 14.5573 16.001 14.6532C17.2446 15.2439 18.5891 15.6566 20.0016 15.8584C20.1396 15.8782 20.3225 15.8995 20.5502 15.9225C20.8056 15.9483 21 16.1633 21 16.42Z"></path></svg> <a href="tel:${loc.telefono}" target="_blank" rel="noopener">${loc.telefono}</a>
+          </div>
+          `
+          : ""
+      }
+      ${
+        loc.email
+          ? `
+          <div class="slp-infowindow-contact-box">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="currentColor"><path d="M3 3H21C21.5523 3 22 3.44772 22 4V20C22 20.5523 21.5523 21 21 21H3C2.44772 21 2 20.5523 2 20V4C2 3.44772 2.44772 3 3 3ZM12.0606 11.6829L5.64722 6.2377L4.35278 7.7623L12.0731 14.3171L19.6544 7.75616L18.3456 6.24384L12.0606 11.6829Z"></path></svg> <a href="mailto:${loc.email}" target="_blank" rel="noopener">${loc.email}</a>
+          </div>
+          `
+          : ""
       }
       ${
         loc.sitio_web
-          ? `<p><a href="${loc.sitio_web}" target="_blank">${loc.sitio_web}</a></p>`
+          ? `
+          <div class="slp-infowindow-contact-box">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="currentColor"><path d="M12 22C6.47715 22 2 17.5228 2 12C2 6.47715 6.47715 2 12 2C17.5228 2 22 6.47715 22 12C22 17.5228 17.5228 22 12 22ZM9.71002 19.6674C8.74743 17.6259 8.15732 15.3742 8.02731 13H4.06189C4.458 16.1765 6.71639 18.7747 9.71002 19.6674ZM10.0307 13C10.1811 15.4388 10.8778 17.7297 12 19.752C13.1222 17.7297 13.8189 15.4388 13.9693 13H10.0307ZM19.9381 13H15.9727C15.8427 15.3742 15.2526 17.6259 14.29 19.6674C17.2836 18.7747 19.542 16.1765 19.9381 13ZM4.06189 11H8.02731C8.15732 8.62577 8.74743 6.37407 9.71002 4.33256C6.71639 5.22533 4.458 7.8235 4.06189 11ZM10.0307 11H13.9693C13.8189 8.56122 13.1222 6.27025 12 4.24799C10.8778 6.27025 10.1811 8.56122 10.0307 11ZM14.29 4.33256C15.2526 6.37407 15.8427 8.62577 15.9727 11H19.9381C19.542 7.8235 17.2836 5.22533 14.29 4.33256Z"></path></svg> <a href="${loc.sitio_web}" target="_blank" rel="noopener">${loc.sitio_web}</a>
+          </div>`
+          : ""
+      }
+      ${
+        loc.schedule
+          ? `<div class="slp-infowindow-contact-box">
+          <div class="slp-infowindow-contact-box-title"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="currentColor"><path d="M12 22C6.47715 22 2 17.5228 2 12C2 6.47715 6.47715 2 12 2C17.5228 2 22 6.47715 22 12C22 17.5228 17.5228 22 12 22ZM12 20C16.4183 20 20 16.4183 20 12C20 7.58172 16.4183 4 12 4C7.58172 4 4 7.58172 4 12C4 16.4183 7.58172 20 12 20ZM13 12H17V14H11V7H13V12Z"></path></svg> Horario</div>
+          ${loc.schedule}
+          </div>`
           : ""
       }
       ${
         loc.redes && loc.redes.length
-          ? loc.redes
+          ? `<div class="slp-infowindow-contact-box">${loc.redes
               .map(
                 (red) =>
-                  `<p>🔗 <a href="${red.url}" target="_blank">${getSocialIcon(
+                  `<a href="${red.url}" target="_blank" rel="noopener" title="${
                     red.platform
-                  )}</a></p>`
+                  }">${getSocialIcon(red.platform, 20, accentColor)}</a>`
               )
-              .join("")
+              .join("")}</div>`
           : ""
       }
+      </div>
+      <div class="slp-infowindow-directions-link">
+        <a href="${gmapsUrl}" target="_blank" rel="noopener" class="slp-directions-link">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M4.96488 5.09625L8.5107 17.5066L11.5514 11.4253L17.188 9.17062L4.96488 5.09625ZM2.89945 2.29958L21.7052 8.56818C21.9672 8.6555 22.1088 8.93866 22.0215 9.20063C21.975 9.34016 21.8694 9.45214 21.7328 9.50676L13.0002 12.9998L8.57501 21.8501C8.45151 22.0971 8.15118 22.1972 7.90419 22.0737C7.77883 22.011 7.68553 21.8986 7.64703 21.7639L2.26058 2.91129C2.18472 2.64577 2.33846 2.36903 2.60398 2.29316C2.70087 2.26548 2.80386 2.26772 2.89945 2.29958Z"></path></svg>Obtener indicaciones
+        </a>
+      </div>
     </div>
   `;
 }
@@ -276,7 +327,7 @@ function initAutocomplete(map) {
  * Renderiza las cards de tienda en el sidebar y las enlaza a los marcadores.
  * Al seleccionar, marca la card, el pin y muestra el panel lateral.
  */
-function renderStoreList(map, markers, storesToShow) {
+function renderStoreList(map, markers, storesToShow, infoWindows) {
   const container = document.querySelector(".slp-locator-list");
   if (!container) return;
 
@@ -320,7 +371,7 @@ function renderStoreList(map, markers, storesToShow) {
       }
     });
     activeIndex = null;
-    if (infoPanel) infoPanel.style.display = "none";
+    // if (infoPanel) infoPanel.style.display = "none";
   }
   if (closeBtn) closeBtn.onclick = clearActive;
 
@@ -384,7 +435,7 @@ function renderStoreList(map, markers, storesToShow) {
       map.setZoom(16);
 
       // Panel lateral de info
-      if (infoPanel && panelContent) {
+      /* if (infoPanel && panelContent) {
         panelContent.innerHTML = `
           ${loc.logo ? `<img src="${loc.logo}" class="slp-panel-logo">` : ""}
           <strong>${loc.nombre}</strong>
@@ -415,7 +466,10 @@ function renderStoreList(map, markers, storesToShow) {
           }
         `;
         infoPanel.style.display = "block";
-      }
+      } */
+      if (window.slpOpenInfoWindow) window.slpOpenInfoWindow.close();
+      infoWindows[globalIndex].open(map, markers[globalIndex]);
+      window.slpOpenInfoWindow = infoWindows[globalIndex];
       activeIndex = globalIndex;
     });
   });
@@ -431,6 +485,10 @@ function renderStoreList(map, markers, storesToShow) {
           parseFloat(loc.lng) === marker.getPosition().lng()
       );
       if (idx === -1) return;
+
+      if (window.slpOpenInfoWindow) window.slpOpenInfoWindow.close();
+      infoWindows[globalIdx].open(map, marker);
+      window.slpOpenInfoWindow = infoWindows[globalIdx];
 
       cardNodes.forEach((c) => c.classList.remove("active"));
       cardNodes[idx].classList.add("active");
@@ -451,7 +509,7 @@ function renderStoreList(map, markers, storesToShow) {
       map.setZoom(18);
 
       // Panel info
-      if (infoPanel && panelContent) {
+      /* if (infoPanel && panelContent) {
         const loc = storesToShow[idx];
         panelContent.innerHTML = `
           ${loc.logo ? `<img src="${loc.logo}" class="slp-panel-logo">` : ""}
@@ -483,7 +541,7 @@ function renderStoreList(map, markers, storesToShow) {
           }
         `;
         infoPanel.style.display = "block";
-      }
+      } */
       activeIndex = globalIdx;
     });
   });
@@ -518,6 +576,9 @@ function initMap() {
   const markers = [];
   const infoWindows = [];
 
+  const accentColor =
+    window.slpData && slpData.accentColor ? slpData.accentColor : "#1890ff";
+
   slpData.locations.forEach((loc) => {
     const position = {
       lat: parseFloat(loc.lat),
@@ -539,7 +600,7 @@ function initMap() {
 
     // InfoWindow por compatibilidad
     const infoWindow = new google.maps.InfoWindow({
-      content: createInfoWindowContent(loc),
+      content: createInfoWindowContent(loc, accentColor),
     });
 
     if (!window.slpOpenInfoWindow) window.slpOpenInfoWindow = null;
@@ -559,7 +620,7 @@ function initMap() {
   map.fitBounds(bounds);
 
   // --- Al cargar, sólo muestra las primeras 10 de la RM ---
-  renderStoreList(map, markers, getDefaultStores("Metropolitana"));
+  renderStoreList(map, markers, getDefaultStores("Metropolitana"), infoWindows);
 
   autoGeolocateIfAllowed(map);
 
@@ -578,7 +639,7 @@ function initMap() {
       const lat = place.geometry.location.lat();
       const lng = place.geometry.location.lng();
       const nearbyStores = getNearbyStores(lat, lng, kmRadius);
-      renderStoreList(map, markers, nearbyStores);
+      renderStoreList(map, markers, nearbyStores, infoWindows);
       map.panTo(place.geometry.location);
       findNearbyStores(place.geometry.location, map);
     });
@@ -599,7 +660,7 @@ function initMap() {
           const userLng = position.coords.longitude;
           // Actualiza listado con las cercanas
           const nearbyStores = getNearbyStores(userLat, userLng, kmRadius);
-          renderStoreList(map, markers, nearbyStores);
+          renderStoreList(map, markers, nearbyStores, infoWindows);
 
           // Reverse geocode para el input
           const geocoder = new google.maps.Geocoder();
@@ -645,6 +706,10 @@ function initMap() {
         }
       );
     });
+  }
+  const root = document.querySelector(".slp-store-locator");
+  if (root && slpData.accentColor) {
+    root.style.setProperty("--slp-accent", slpData.accentColor);
   }
 }
 

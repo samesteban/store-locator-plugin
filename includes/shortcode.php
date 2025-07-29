@@ -85,6 +85,7 @@ add_shortcode('store_locator', function ($atts) {
     wp_localize_script('slp-map-script', 'slpData', [
         'locations'  => $locations,
         'customIcon' => get_option('slp_custom_pin_url'),
+        'accentColor' => get_option('slp_accent_color', '24,144,255'),
     ]);
 
     // Encolar el script solo si no está ya encolado

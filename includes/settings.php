@@ -115,6 +115,38 @@ add_action('admin_init', function () {
         'slp_settings',
         'slp_section'
     );
+
+    register_setting('slp_settings', 'slp_accent_color', [
+        'sanitize_callback' => function($color) {
+            // Acepta solo HEX y convierte a rgb(r,g,b)
+            if (preg_match('/^#([a-f0-9]{6})$/i', $color, $matches)) {
+                $hex = $matches[1];
+                $r = hexdec(substr($hex, 0, 2));
+                $g = hexdec(substr($hex, 2, 2));
+                $b = hexdec(substr($hex, 4, 2));
+                return "$r,$g,$b"; // formato: "25,144,255"
+            }
+            // Default: azul #1890ff
+            return "24,144,255";
+        }
+    ]);
+
+    add_settings_field(
+        'slp_accent_color',
+        'Color de acento',
+        function () {
+            // Al mostrar el input, convierte RGB a HEX para el value:
+            $rgb = get_option('slp_accent_color', '24,144,255');
+            $parts = explode(',', $rgb);
+            $hex = sprintf("#%02x%02x%02x", $parts[0], $parts[1], $parts[2]);
+            echo "<input type='color' name='slp_accent_color' value='$hex' />";
+            echo "<span style='margin-left:8px;'>$hex</span>";
+            echo "<p class='description'>Usado para resaltar la card activa y los links en los popups.</p>";
+        },
+        'slp_settings',
+        'slp_section'
+    );
+
 });
 
 // Encola los scripts necesarios solo en la página de ajustes del plugin
