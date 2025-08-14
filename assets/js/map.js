@@ -251,6 +251,22 @@ function locateAndCenter(map, position = null) {
     } else {
       showToast("No hay tiendas cercanas en un radio de 5 km.");
     }
+
+    if (window.slpUserMarker) {
+      window.slpUserMarker.setMap(null);
+    }
+    window.slpUserLocationIcon = slpData.userLocationIcon;
+    window.slpUserMarker = new google.maps.Marker({
+      position: { lat: userLat, lng: userLng },
+      map: map,
+      icon: {
+        url:
+          window.slpUserLocationIcon ||
+          "https://tusitio.com/wp-content/plugins/store-locator/assets/img/user-location.png",
+        scaledSize: new google.maps.Size(25, 25), // Ajusta si el ícono es muy grande o pequeño
+      },
+      title: "Tu ubicación",
+    });
   };
 
   if (position) {

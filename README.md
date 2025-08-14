@@ -72,6 +72,12 @@ El script principal es `/assets/js/map.js` y viene comentado para facilitar su e
 
 ## Actualización y cambios
 
+## [1.3.2] - 2025-08-14
+
+### Fixed
+
+- Corregir error de geolocalización del usuario.
+
 ## [1.3.1] - 2025-08-14
 
 ### Added
