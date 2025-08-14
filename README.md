@@ -1,6 +1,6 @@
 # Store Locator Plugin para WordPress
 
-**Versión: 1.3.0**  
+**Versión: 1.3.1**  
 Desarrollado por Samuel Esteban
 
 ## Descripción
@@ -71,6 +71,18 @@ El script principal es `/assets/js/map.js` y viene comentado para facilitar su e
 - Cuenta y clave de Google Maps API
 
 ## Actualización y cambios
+
+## [1.3.1] - 2025-08-14
+
+### Added
+
+- Nuevo tooltip para botón de geolocalización.
+- Agregar icono para la geolocalización del usuario.
+- Icono de ubicación del usuario personalizable.
+
+### Fixed
+
+- Tamaño de los marcadores de la lista de tiendas.
 
 ## [1.3.0] - 2025-06-19
 
