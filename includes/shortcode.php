@@ -86,6 +86,7 @@ add_shortcode('store_locator', function ($atts) {
         'locations'  => $locations,
         'customIcon' => get_option('slp_custom_pin_url'),
         'accentColor' => get_option('slp_accent_color', '24,144,255'),
+        'userLocationIcon' => get_option('slp_user_location_icon') ?: SLP_URL . 'assets/img/user-marker.png',
     ]);
 
     // Encolar el script solo si no está ya encolado

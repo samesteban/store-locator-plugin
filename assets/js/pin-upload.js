@@ -46,3 +46,36 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 });
+
+document.addEventListener("DOMContentLoaded", function () {
+  const frame = wp.media({
+    title: "Selecciona un ícono",
+    multiple: false,
+    library: { type: "image" },
+  });
+
+  document
+    .getElementById("upload_user_location_icon")
+    ?.addEventListener("click", function () {
+      frame.open();
+      frame.on("select", function () {
+        const attachment = frame.state().get("selection").first().toJSON();
+        document.getElementById("slp_user_location_icon").value =
+          attachment.url;
+        document.getElementById("slp_user_icon_preview").src = attachment.url;
+        document.getElementById("slp_user_icon_preview").style.display =
+          "block";
+        document.getElementById("remove_user_icon").style.display =
+          "inline-block";
+      });
+    });
+
+  document
+    .getElementById("remove_user_icon")
+    ?.addEventListener("click", function () {
+      document.getElementById("slp_user_location_icon").value = "";
+      document.getElementById("slp_user_icon_preview").src = "";
+      document.getElementById("slp_user_icon_preview").style.display = "none";
+      this.style.display = "none";
+    });
+});

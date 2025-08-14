@@ -147,6 +147,29 @@ add_action('admin_init', function () {
         'slp_section'
     );
 
+    register_setting('slp_settings', 'slp_user_location_icon', ['sanitize_callback' => 'esc_url_raw']);
+
+    add_settings_field(
+        'slp_user_location_icon',
+        'Ícono de ubicación del usuario',
+        function () {
+            $image_url = esc_attr(get_option('slp_user_location_icon'));
+            echo '<input type="text" id="slp_user_location_icon" name="slp_user_location_icon" value="' . esc_url($image_url) . '" class="regular-text" />';
+            echo '<button type="button" class="button" id="upload_user_location_icon">Subir imagen</button>';
+
+            // Vista previa del ícono y botón para remover
+            if ($image_url) {
+                echo '<br><img id="slp_user_icon_preview" src="' . esc_url($image_url) . '" style="max-width:60px;margin-top:10px;" />';
+                echo '<br><button type="button" class="button" id="remove_user_icon">Quitar imagen</button>';
+            } else {
+                echo '<br><img id="slp_user_icon_preview" src="" style="display:none;max-width:60px;margin-top:10px;" />';
+                echo '<br><button type="button" class="button" id="remove_user_icon" style="display:none;">Quitar imagen</button>';
+            }
+        },
+        'slp_settings',
+        'slp_section'
+    );
+
 });
 
 // Encola los scripts necesarios solo en la página de ajustes del plugin

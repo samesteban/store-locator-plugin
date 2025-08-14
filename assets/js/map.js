@@ -364,7 +364,7 @@ function renderStoreList(map, markers, storesToShow, infoWindows) {
       if (marker.setIcon && slpData.customIcon) {
         marker.setIcon({
           url: slpData.customIcon,
-          scaledSize: new google.maps.Size(32, 32),
+          scaledSize: new google.maps.Size(44, 44),
         });
       } else if (marker.setIcon) {
         marker.setIcon(null);
@@ -593,7 +593,7 @@ function initMap() {
     if (slpData.customIcon) {
       markerOptions.icon = {
         url: slpData.customIcon,
-        scaledSize: new google.maps.Size(38, 38),
+        scaledSize: new google.maps.Size(44, 44),
       };
     }
     const marker = new google.maps.Marker(markerOptions);
@@ -690,6 +690,25 @@ function initMap() {
           });
           if (!nearbyBounds.isEmpty()) {
             map.fitBounds(nearbyBounds);
+            // Elimina el marcador anterior si ya existía
+            if (window.slpUserMarker) {
+              window.slpUserMarker.setMap(null);
+            }
+
+            window.slpUserLocationIcon = slpData.userLocationIcon;
+
+            // Crear nuevo marcador de ubicación exacta
+            window.slpUserMarker = new google.maps.Marker({
+              position: { lat: userLat, lng: userLng },
+              map: map,
+              icon: {
+                url:
+                  window.slpUserLocationIcon ||
+                  "https://tusitio.com/wp-content/plugins/store-locator/assets/img/user-location.png",
+                scaledSize: new google.maps.Size(25, 25), // Ajusta si el ícono es muy grande o pequeño
+              },
+              title: "Tu ubicación",
+            });
           } else {
             showToast("No hay tiendas cercanas en un radio de 5 km.");
           }
@@ -710,6 +729,25 @@ function initMap() {
   const root = document.querySelector(".slp-store-locator");
   if (root && slpData.accentColor) {
     root.style.setProperty("--slp-accent", slpData.accentColor);
+  }
+
+  if (geolocateButton) {
+    // Crea el tooltip
+    const tooltip = document.createElement("div");
+    tooltip.className = "slp-tooltip";
+    tooltip.innerHTML = "Mostrar tu ubicación";
+
+    // Inserta el tooltip en el DOM
+    geolocateButton.style.position = "relative";
+    geolocateButton.appendChild(tooltip);
+
+    // Eventos
+    geolocateButton.addEventListener("mouseenter", () => {
+      tooltip.style.display = "block";
+    });
+    geolocateButton.addEventListener("mouseleave", () => {
+      tooltip.style.display = "none";
+    });
   }
 }
 

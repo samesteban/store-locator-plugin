@@ -228,6 +228,36 @@
   min-width: 240px;
 }
 
+/* --- TOOLTIP --- */
+.slp-tooltip {
+  position: absolute;
+  padding: 6px 10px;
+  background: #000;
+  color: #fff;
+  font-size: 13px;
+  font-family: inherit, sans-serif;
+  white-space: nowrap;
+  z-index: 9999;
+  left: 115%;
+  top: 50%;
+  transform: translateY(-50%);
+  display: none;
+  pointer-events: none;
+}
+.slp-tooltip:after {
+  content: "";
+  position: absolute;
+  display: block;
+  width: 0;
+  z-index: 1;
+  border-style: solid;
+  border-color: transparent #000000;
+  border-width: 5px 5px 5px 0;
+  top: 50%;
+  left: -5px;
+  margin-top: -5px;
+}
+
 /* --- MOBILE: Breakpoint para pantallas <=900px --- */
 @media (max-width: 900px) {
   .slp-store-locator {
