@@ -175,6 +175,23 @@ function createInfoWindowContent(loc, accentColor = "#1890ff") {
   `;
 }
 
+/* Agregar marcador de ubicación del usuario */
+function addUserMarker(map, userLat, userLng) {
+  if (window.slpUserMarker) {
+    window.slpUserMarker.setMap(null);
+  }
+  window.slpUserLocationIcon = slpData.userLocationIcon;
+  window.slpUserMarker = new google.maps.Marker({
+    position: { lat: userLat, lng: userLng },
+    map: map,
+    icon: {
+      url: window.slpUserLocationIcon,
+      scaledSize: new google.maps.Size(25, 25), // Ajusta si el ícono es muy grande o pequeño
+    },
+    title: "Tu ubicación",
+  });
+}
+
 // --- UTILIDADES DE FILTRADO ---
 // Filtra tiendas cercanas a un punto, en un radio (km)
 function getNearbyStores(centerLat, centerLng, radiusKm = 5) {
@@ -252,21 +269,7 @@ function locateAndCenter(map, position = null) {
       showToast("No hay tiendas cercanas en un radio de 5 km.");
     }
 
-    if (window.slpUserMarker) {
-      window.slpUserMarker.setMap(null);
-    }
-    window.slpUserLocationIcon = slpData.userLocationIcon;
-    window.slpUserMarker = new google.maps.Marker({
-      position: { lat: userLat, lng: userLng },
-      map: map,
-      icon: {
-        url:
-          window.slpUserLocationIcon ||
-          "https://tusitio.com/wp-content/plugins/store-locator/assets/img/user-location.png",
-        scaledSize: new google.maps.Size(25, 25), // Ajusta si el ícono es muy grande o pequeño
-      },
-      title: "Tu ubicación",
-    });
+    addUserMarker(map, userLat, userLng);
   };
 
   if (position) {
@@ -334,6 +337,11 @@ function initAutocomplete(map) {
     }
     map.panTo(place.geometry.location);
     findNearbyStores(place.geometry.location, map);
+    addUserMarker(
+      map,
+      place.geometry.location.lat(),
+      place.geometry.location.lng()
+    );
   });
 }
 
@@ -658,6 +666,7 @@ function initMap() {
       renderStoreList(map, markers, nearbyStores, infoWindows);
       map.panTo(place.geometry.location);
       findNearbyStores(place.geometry.location, map);
+      addUserMarker(map, lat, lng);
     });
   }
   customInitAutocomplete();
@@ -706,25 +715,8 @@ function initMap() {
           });
           if (!nearbyBounds.isEmpty()) {
             map.fitBounds(nearbyBounds);
-            // Elimina el marcador anterior si ya existía
-            if (window.slpUserMarker) {
-              window.slpUserMarker.setMap(null);
-            }
 
-            window.slpUserLocationIcon = slpData.userLocationIcon;
-
-            // Crear nuevo marcador de ubicación exacta
-            window.slpUserMarker = new google.maps.Marker({
-              position: { lat: userLat, lng: userLng },
-              map: map,
-              icon: {
-                url:
-                  window.slpUserLocationIcon ||
-                  "https://tusitio.com/wp-content/plugins/store-locator/assets/img/user-location.png",
-                scaledSize: new google.maps.Size(25, 25), // Ajusta si el ícono es muy grande o pequeño
-              },
-              title: "Tu ubicación",
-            });
+            addUserMarker(map, userLat, userLng);
           } else {
             showToast("No hay tiendas cercanas en un radio de 5 km.");
           }

@@ -72,6 +72,12 @@ El script principal es `/assets/js/map.js` y viene comentado para facilitar su e
 
 ## Actualización y cambios
 
+## [1.3.3] - 2025-08-14
+
+### Fixed
+
+- Agregar marcador de ubicación del usuario al buscar ubicación.
+
 ## [1.3.2] - 2025-08-14
 
 ### Fixed
