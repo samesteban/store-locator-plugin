@@ -2,7 +2,7 @@
 /**
  * Plugin Name: Store Locator Plugin
  * Description: Geolocalización de tiendas usando Google Maps y ACF.
- * Version: 1.0.0
+ * Version: 1.3.1
  * Author: Samuel
  * Text Domain: store-locator
  */
